@@ -58,7 +58,7 @@ var BAREME={3:[0.529,0.316,1065,0.370],4:[0.606,0.340,1330,0.407],5:[0.636,0.357
 var S;try{S=JSON.parse(document.getElementById('state').textContent)}catch(e){S={entries:[],payments:[],settings:{cv:7,electric:true,bareme:null}}}
 S.entries=S.entries||[];S.payments=S.payments||[];S.settings=S.settings||{cv:7,electric:true,bareme:null};
 var ART=null,mode='pending',tab=location.hash==='#reglages'?'reglages':(location.hash==='#versements'?'versements':(location.hash==='#trajets'?'trajets':'saisie'));
-var today=new Date().toISOString().slice(0,10);
+var _n=new Date();var today=new Date(_n.getTime()-_n.getTimezoneOffset()*60000).toISOString().slice(0,10);
 var year=new Date().getFullYear();
 var confirmDel=null,status='';
 var root=document.getElementById('root');
@@ -72,13 +72,6 @@ function yrs(){var y={};y[year]=1;S.entries.forEach(function(e){y[+e.date.slice(
 function inYear(a){return a.filter(function(e){return +e.date.slice(0,4)===year})}
 function labels(){var c={};S.entries.forEach(function(e){if(e.label)c[e.label]=(c[e.label]||0)+1});return Object.keys(c).sort(function(a,b){return c[b]-c[a]}).slice(0,6)}
 
-function buildDoc(){
-  var st=document.getElementById('style').outerHTML;
-  var app=document.getElementById('app').textContent;
-  var json=JSON.stringify(S).replace(/</g,'\\u003c');
-  return '<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Suivi IK – VTC</title>\n'+st+'\n</head>\n<body>\n<div id="root"></div>\n<script id="state" type="application/json">'+json+'<\/script>\n<script id="app">'+app+'<\/script>\n<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});</script>
-</body>\n</html>';
-}
 function save(msg){
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();localStorage.setItem('ik_state',JSON.stringify(S));status=msg}catch(e){status='Erreur : stockage indisponible sur ce navigateur.'}
   render();
@@ -150,5 +143,6 @@ try{var ls=localStorage.getItem('ik_state');if(ls){S=JSON.parse(ls);S.settings=S
 render();
 })();
 </script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});</script>
 </body>
 </html>
